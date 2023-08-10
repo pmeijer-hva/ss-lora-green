@@ -41,7 +41,7 @@ def join_lora():
         while not lora.has_joined():
             time.sleep(2.5)
             #time.sleep(7)
-            print('Not yet joined...')
+            print('Not yet joined...') 
             
     except Exception as e:
         print("error:" + e)

@@ -1,5 +1,6 @@
 import machine
 from modules import dht_module, lightsensor, anemometer
+from modules.anemometer import Anemometer
 import time
 import pycom
 import _thread
@@ -89,36 +90,20 @@ def measure():
         payload = []
 
 
-# def mock_measure():
-#     print("mock_measure starting")
-#     global payload
-#     mm = []
-#     mm_temp = (random.randrange(300, 400, 1)/10)
-#     mm_hum = (random.randrange(0, 1000, 1)/10)
-#     print("mock hum temp:", mm_hum, mm_temp)
-#     print("mock ohum otemp:", int(mm_hum*10), int(mm_temp*10))
-#     ht_bytes = struct.pack('HH', int(mm_hum*10), int(mm_temp*10))
-#     payload.append(ht_bytes[0])
-#     payload.append(ht_bytes[1])
-#     payload.append(ht_bytes[2])
-#     payload.append(ht_bytes[3])
-#     print(payload)
-
-def create_payload(data):
-    pass
 
 # light sensor init
 adc = machine.ADC()             # create an ADC object for the light sensor
 apin_lightsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13, 3.3V reference, 12bit
 
 # anemometer init
-sensor_anemometer = anemometer()
+sensor_anemometer = Anemometer()
 
 print("starting main")
 
 if __name__ == "__main__":
-    #sckt = join_lora()
+    sckt = join_lora()
     time.sleep(2)
+    MESURE = 0
     # global data buffer
     payload = []            # common data buffer to collect and send
     d = dht_module.device(machine.Pin.exp_board.G22)
@@ -127,13 +112,14 @@ if __name__ == "__main__":
         #print("Humidity:", hum, "Temperature: ",temp)
         #print(hum, temp)
         #mock_measure()     
-        measure_light()
+        #measure_light()
 
         if hum != None and temp != None:
             # encode
             hum = int(hum * 10)                 # 2 Bytes
             temp = int(temp*10) + 400           # max -40°, use it as offset
-            light = int(light)
+            #light = int(light)
+            light = int(0)
             #windspeed = int(windspeed * 10)           # convert into a int with multiplying by 10
             #print("temp: ", temp, "hum: ", hum)
 
@@ -150,17 +136,23 @@ if __name__ == "__main__":
             light = None
             windspeed = None
 
-        print("LORA:", payload)
+       
         # payload = [0x01, 0x02, 0x03]
         if len(payload) != 0:
-            #send_lora(sckt, payload)
+            print("LORA:", payload)
+            send_lora(sckt, payload)
+            MESURE+=1
             payload = []
             # confirm with LED
             # pycom.rgbled(0x0000FF)  # Blue
             # time.sleep(0.1)
             # pycom.rgbled(0x000000)  # Off
             #time.sleep(1.9)
+        else:
+            print("EMPTY PAYLOAD")
         time.sleep(period)
-
+        if MESURE is 5:
+            print("GOING TO SLEEP")
+            machine.deepsleep(5000)
 
   
