@@ -36,12 +36,12 @@ def join_lora():
         lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
    
         #lora.join(activation=LoRa.OTAA, auth=(dev_eui, app_eui, app_key), timeout=0)
-
+        time.sleep(2)
         # wait until the module has joined the network
         while not lora.has_joined():
-            time.sleep(2.5)
+            time.sleep(3)
             #time.sleep(7)
-            print('Not yet joined...') 
+            #print('Not yet joined...') 
             
     except Exception as e:
         print("error:" + e)

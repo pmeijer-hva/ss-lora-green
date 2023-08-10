@@ -6,6 +6,7 @@ import pycom
 import _thread
 from modules.lora_module import join_lora, send_lora
 import ustruct
+from machine import Timer
 #import random
 
 # global variables
@@ -15,6 +16,9 @@ hum = None
 temp = None
 light = None
 windspeed = None
+
+UP_TIME = 15
+DOWN_TIME = 60
 
 def measure_dht():
     #print("function measure")
@@ -29,7 +33,7 @@ def measure_dht():
     else:
         print(d.status)
         print(None, None)
-    time.sleep(5)
+    time.sleep(1)
 
     #return(hum, temp)
 
@@ -42,7 +46,7 @@ def measure_light():
         print("Light: ", light)
     else:
         print("Light: ",None)
-    time.sleep(5)
+    #time.sleep(5)
 
 def measure_wind():
     global Anemometer
@@ -100,6 +104,7 @@ sensor_anemometer = Anemometer()
 
 print("starting main")
 
+
 if __name__ == "__main__":
     sckt = join_lora()
     time.sleep(2)
@@ -107,29 +112,33 @@ if __name__ == "__main__":
     # global data buffer
     payload = []            # common data buffer to collect and send
     d = dht_module.device(machine.Pin.exp_board.G22)
-    while True:
+    chrono = Timer.Chrono()
+    chrono.start()
+    while chrono.read() < UP_TIME:
+        print("TIME: ", chrono.read())
         measure_dht()
-        #print("Humidity:", hum, "Temperature: ",temp)
-        #print(hum, temp)
-        #mock_measure()     
-        #measure_light()
-
+        time.sleep(2)
         if hum != None and temp != None:
             # encode
+            temp = int(temp * 10 ) + 400           # max -40°, use it as offset
             hum = int(hum * 10)                 # 2 Bytes
-            temp = int(temp*10) + 400           # max -40°, use it as offset
-            #light = int(light)
-            light = int(0)
-            #windspeed = int(windspeed * 10)           # convert into a int with multiplying by 10
-            #print("temp: ", temp, "hum: ", hum)
+            lux = int(0 * 10)                 # 2 Bytes
+            press = int(0 / 100)              # original value is in pA 
+            ht_bytes = ustruct.pack('HHHH', temp, hum, lux, press)
 
-            ht_bytes = ustruct.pack('HHH', hum, temp, light)
+            payload = []
+               
             payload.append(ht_bytes[0])
             payload.append(ht_bytes[1])
             payload.append(ht_bytes[2])
             payload.append(ht_bytes[3])
             payload.append(ht_bytes[4])
+            payload.append(ht_bytes[5])
+            payload.append(ht_bytes[6])
+            payload.append(ht_bytes[7])
 
+
+            print("[SENT] TEMP: {} | HUM: {} | DOLK \n".format(temp, hum))
 
             hum = None
             temp = None
@@ -141,18 +150,12 @@ if __name__ == "__main__":
         if len(payload) != 0:
             print("LORA:", payload)
             send_lora(sckt, payload)
-            MESURE+=1
+            print("SENT PAYLOAD: ", payload)
             payload = []
-            # confirm with LED
-            # pycom.rgbled(0x0000FF)  # Blue
-            # time.sleep(0.1)
-            # pycom.rgbled(0x000000)  # Off
-            #time.sleep(1.9)
+            
         else:
             print("EMPTY PAYLOAD")
-        time.sleep(period)
-        if MESURE is 5:
-            print("GOING TO SLEEP")
-            machine.deepsleep(5000)
 
+    print("[Going into a coma]")
+    machine.deepsleep(DOWN_TIME*100)
   

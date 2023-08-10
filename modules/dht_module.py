@@ -18,7 +18,7 @@ class device:
 
     def trigger(self):
         self.pin(1)
-        time.sleep(2)  # enforce two second read interval
+        #time.sleep(2)  # enforce two second read interval
 
         self.pin(0)  # send start signal (1ms low).
         time.sleep_ms(1)
@@ -69,4 +69,4 @@ if __name__ == "__main__":
             print("RH = {}%  T = {}C".format(dht.humidity, dht.temperature))
         else:
             print(dht.status)
-        time.sleep(5)
+        #time.sleep(5)
