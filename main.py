@@ -8,6 +8,7 @@ import _thread
 from modules.lora_module import join_lora, send_lora
 import ustruct
 from machine import Timer
+from modules.soundsensor import *
 #import random
 
 # global variables
@@ -22,6 +23,13 @@ led = Pin(machine.Pin.exp_board.G15,mode=Pin.OUT)
 led.value(0)
 UP_TIME = 15
 DOWN_TIME = 60
+
+def measure_sound():
+    adc = machine.ADC()             # create an ADC object for the sound sensor
+    apin_soundsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
+    avg_sound = running_average()
+    print(avg_sound)
+    #time.sleep(periode)
 
 def measure_dht():
     #print("function measure")
@@ -121,6 +129,7 @@ if __name__ == "__main__":
     while chrono.read() < UP_TIME:
         print("TIME: ", chrono.read())
         measure_dht()
+        measure_sound()
         time.sleep(2)
         if hum != None and temp != None:
             # encode
