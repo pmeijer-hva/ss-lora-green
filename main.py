@@ -1,4 +1,5 @@
 import machine
+from machine import Pin
 from modules import dht_module, lightsensor, anemometer
 from modules.anemometer import Anemometer
 import time
@@ -17,6 +18,8 @@ temp = None
 light = None
 windspeed = None
 
+led = Pin(machine.Pin.exp_board.G15,mode=Pin.OUT)
+led.value(0)
 UP_TIME = 15
 DOWN_TIME = 60
 
@@ -114,6 +117,7 @@ if __name__ == "__main__":
     d = dht_module.device(machine.Pin.exp_board.G22)
     chrono = Timer.Chrono()
     chrono.start()
+    led.value(1)
     while chrono.read() < UP_TIME:
         print("TIME: ", chrono.read())
         measure_dht()
@@ -157,5 +161,6 @@ if __name__ == "__main__":
             print("EMPTY PAYLOAD")
 
     print("[Going into a coma]")
-    machine.deepsleep(DOWN_TIME*100)
+    led.value(0)
+    machine.deepsleep(DOWN_TIME*1000)
   
