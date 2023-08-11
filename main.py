@@ -8,7 +8,7 @@ import _thread
 from modules.lora_module import join_lora, send_lora
 import ustruct
 from machine import Timer
-from modules.soundsensor import *
+import modules.soundsensor as Soundsensor
 #import random
 
 # global variables
@@ -26,9 +26,8 @@ DOWN_TIME = 60
 
 def measure_sound():
     adc = machine.ADC()             # create an ADC object for the sound sensor
-    apin_soundsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
-    avg_sound = running_average()
-    print(avg_sound)
+    avg_sound = Soundsensor.running_average(apin_soundsensor)
+    print("Sound: ", avg_sound)
     #time.sleep(periode)
 
 def measure_dht():
@@ -42,7 +41,7 @@ def measure_dht():
         print("Humidity:", hum,  "Temperature: ",temp)
         
     else:
-        print(d.status)
+        print("STATUS: ",d.status)
         print(None, None)
     time.sleep(1)
 
@@ -59,7 +58,7 @@ def measure_light():
         print("Light: ",None)
     #time.sleep(5)
 
-def measure_wind():
+# def measure_wind():
     global Anemometer
     global windspeed
 
@@ -70,51 +69,57 @@ def measure_wind():
     else:
         print("Windspeed:", None)
 
-def measure():
-    hum = 0
-    temp = -40
-    #print("function measure")
-    global payload
-    global d
-    # measure DHT temp and hum values
-    if d.trigger() == True:
-        hum = d.humidity
-        temp = d.temperature
-        #temp = random.randrange(10, 40, 0.1)
-        #hum = random.randrange(0, 100, 0.1)
+# def measure():
+#     hum = 0
+#     temp = -40
+#     #print("function measure")
+#     global payload
+#     global d
+#     # measure DHT temp and hum values
+#     if d.trigger() == True:
+#         hum = d.humidity
+#         temp = d.temperature
+#         #temp = random.randrange(10, 40, 0.1)
+#         #hum = random.randrange(0, 100, 0.1)
     
-        # encode
-        hum = int(hum * 10)                 # 2 Bytes
-        temp = int(temp*10) + 400           # max -40°, use it as offset
-        #print("temp: ", temp, "hum: ", hum)
+#         # encode
+#         hum = int(hum * 10)                 # 2 Bytes
+#         temp = int(temp*10) + 400           # max -40°, use it as offset
+#         #print("temp: ", temp, "hum: ", hum)
 
-        ht_bytes = ustruct.pack('HH', hum, temp)
-        payload.append(ht_bytes[0])
-        payload.append(ht_bytes[1])
-        payload.append(ht_bytes[2])
-        payload.append(ht_bytes[3])
+#         ht_bytes = ustruct.pack('HH', hum, temp)
+#         payload.append(ht_bytes[0])
+#         payload.append(ht_bytes[1])
+#         payload.append(ht_bytes[2])
+#         payload.append(ht_bytes[3])
     
-        #print("payload written", payload)
-    # confirm with LED
-    # pycom.rgbled(0x0000FF)  # Blue
-    # time.sleep(0.1)
-    # pycom.rgbled(0x000000)  # Off
-    # time.sleep(1.9)
-    else:
-        print(d.status)
-        payload = []
+#         #print("payload written", payload)
+#     # confirm with LED
+#     # pycom.rgbled(0x0000FF)  # Blue
+#     # time.sleep(0.1)
+#     # pycom.rgbled(0x000000)  # Off
+#     # time.sleep(1.9)
+#     else:
+#         print(d.status)
+#         payload = []
 
 
 
 # light sensor init
 adc = machine.ADC()             # create an ADC object for the light sensor
 apin_lightsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13, 3.3V reference, 12bit
+apin_soundsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
 
 # anemometer init
 sensor_anemometer = Anemometer()
 
-print("starting main")
+print("starting main...")
 
+def appendPayload(Bytes) -> list:
+    payload = []
+    for i in range(Bytes):
+        payload.append(Bytes[i])
+    return payload
 
 if __name__ == "__main__":
     sckt = join_lora()
@@ -129,7 +134,7 @@ if __name__ == "__main__":
     while chrono.read() < UP_TIME:
         print("TIME: ", chrono.read())
         measure_dht()
-        measure_sound()
+        # measure_sound()
         time.sleep(2)
         if hum != None and temp != None:
             # encode
