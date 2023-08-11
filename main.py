@@ -144,16 +144,8 @@ if __name__ == "__main__":
             press = int(0 / 100)              # original value is in pA 
             ht_bytes = ustruct.pack('HHHH', temp, hum, lux, press)
 
-            payload = []
+            payload = appendPayload(ht_bytes)
                
-            payload.append(ht_bytes[0])
-            payload.append(ht_bytes[1])
-            payload.append(ht_bytes[2])
-            payload.append(ht_bytes[3])
-            payload.append(ht_bytes[4])
-            payload.append(ht_bytes[5])
-            payload.append(ht_bytes[6])
-            payload.append(ht_bytes[7])
 
 
             print("[SENT] TEMP: {} | HUM: {} | DOLK \n".format(temp, hum))
