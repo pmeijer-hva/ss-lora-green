@@ -18,7 +18,7 @@ def mean(thelist: list) -> int:
         sum += n
     return(int(sum/len(thelist)))
 
-def sum(apin_soundsensor):
+def sum(thelist):
     sum = 0
     for n in thelist:
         sum += n

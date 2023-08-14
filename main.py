@@ -23,8 +23,10 @@ DOWN_TIME = 60
 def measure_sound(apin_sensor) -> int:
     adc = machine.ADC()             # create an ADC object for the sound sensor
     avg_sound = Soundsensor.running_average(apin_sensor)
+    print("Sound: ", avg_sound)
     if avg_sound == None:
         avg_sound = 0
+        
     return avg_sound
 
 def measure_dht(sensor) -> list:
@@ -43,8 +45,8 @@ def measure_dht(sensor) -> list:
             return [hum, temp]
             
         else:
-            print("STATUS: ",d.status)
-            print(None, None)
+            # print("STATUS: ",d.status)
+            # print(None, None)
             time.sleep(1)
            
     return [0,0]
@@ -155,10 +157,15 @@ if __name__ == "__main__":
         try:
             hum_temp = measure_dht(d)
             hum = hum_temp[0]
+            print("DOLK HUM: ", hum)
             temp = hum_temp[1]
+            print("DOLK TEMP: ", temp)
             light = measure_light(apin_lightsensor)
+            print("DOLK LIGHT: ", light)
             windspeed = measure_wind(None)
             sound = measure_sound(apin_soundsensor)
+            print("DOLK SOUND: ", sound)
+
         except:
             print("Grande Problemas!")
        
@@ -171,14 +178,12 @@ if __name__ == "__main__":
 
         payload = appendPayload(ht_bytes)
             
-        print("[SENT] TEMP: {} | HUM: {} | DOLK \n".format(temp, hum))
-
-            
+        # print("[SENT] TEMP: {} | HUM: {} | DOLK \n".format(temp, hum))
 
        
         # payload = [0x01, 0x02, 0x03]
         if len(payload) != 0:
-            print("LORA:", payload)
+            # print("LORA:", payload)
             send_lora(sckt, payload)
             print("SENT PAYLOAD: ", payload)
             payload = []
@@ -187,6 +192,7 @@ if __name__ == "__main__":
             print("EMPTY PAYLOAD")
         
         #sensing = False
+        print("\n[GOING TO SLEEP]\n")
         time.sleep(DOWN_TIME)
 
 

@@ -82,7 +82,6 @@ def send_lora(s, data):
 
     # get any data received (if any...)
     data = s.recv(64)
-    print(data)
     return(data)
 
 if __name__ == "__main__":
