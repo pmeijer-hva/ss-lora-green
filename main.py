@@ -48,21 +48,20 @@ def measure_dht(sensor) -> list:
             time.sleep(1)
            
     return [0,0]
-    time.sleep(1)
-
-    
+    time.sleep(1)  
 
 def measure_light(apin_sensor) -> int:
     #global apin_lightsensor
     #global light
-
+    lightVal = 0
     light = apin_sensor
     if light != None:
-        print("Light: ", light)
+        print("Light: ", apin_sensor())
+        lightVal = apin_sensor()
     else:
         print("Light: ",None)
-        light = 0
-    return light
+        lightVal = 0
+    return lightVal
     #time.sleep(5)
 
 def measure_wind(sensor):
@@ -143,16 +142,14 @@ if __name__ == "__main__":
     # Sensors
     apin_soundsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
     d = dht_module.device(machine.Pin.exp_board.G22)
-    #apin_lightsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13, 3.3V reference, 12bit
-    apin_lightsensor = None
+    light_ADC = machine.ADC()
+    apin_lightsensor = light_ADC.channel(pin='P15', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P15, 3.3V reference, 12bit
+    #apin_lightsensor = None
     sensor_anemometer = Anemometer()
     sensing = True
     #while chrono.read() < UP_TIME:
     while sensing:
-        print("TIME: ", chrono.read())
-        #measure_dht()
-        #measure_sound()
-        time.sleep(2)
+        #print("TIME: ", chrono.read())
 
         # Data
         try:
@@ -168,7 +165,7 @@ if __name__ == "__main__":
         # encode
         temp = int(temp * 10 ) + 400           # max -40°, use it as offset
         hum = int(hum * 10)                 # 2 Bytes
-        lux = int(0 * 10)                 # 2 Bytes
+        lux = int(light * 10)                 # 2 Bytes
         press = int(0 / 100)              # original value is in pA 
         ht_bytes = ustruct.pack('HHHH', temp, hum, lux, sound)
 

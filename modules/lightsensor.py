@@ -9,7 +9,7 @@ import time
 
 if __name__ == "__main__":
     adc = machine.ADC()             # create an ADC object for the light sensor
-    apin_lightsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
+    apin_lightsensor = adc.channel(pin='P15', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
     while True:
         try:
             lightval = apin_lightsensor()
