@@ -163,9 +163,9 @@ if __name__ == "__main__":
             print("Grande Problemas!")
        
         # encode
-        temp = int(temp * 10 ) + 400           # max -40°, use it as offset
-        hum = int(hum * 10)                 # 2 Bytes
-        lux = int(light * 10)                 # 2 Bytes
+        temp = int(float(temp) * 10 ) + 400           # max -40°, use it as offset
+        hum = int(float(hum) * 10)                 # 2 Bytes
+        lux = int(float(light) * 10)                 # 2 Bytes
         press = int(0 / 100)              # original value is in pA 
         ht_bytes = ustruct.pack('HHHH', temp, hum, lux, sound)
 
