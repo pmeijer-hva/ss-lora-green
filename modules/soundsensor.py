@@ -22,7 +22,7 @@ def sum(apin_soundsensor):
     sum = 0
     for n in thelist:
         sum += n
-    
+    return sum
 
 def running_average(apin_soundsensor) -> int:
 # calculates a running average in a queue
