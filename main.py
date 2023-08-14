@@ -15,8 +15,8 @@ import modules.soundsensor as Soundsensor
 period = 0              # update periode in seconds for measuring a sending
 
 
-led = Pin(machine.Pin.exp_board.G15,mode=Pin.OUT)
-led.value(0)
+# led = Pin(machine.Pin.exp_board.G15,mode=Pin.OUT)
+# led.value(0)
 UP_TIME = 15
 DOWN_TIME = 60
 
@@ -115,6 +115,7 @@ def measure_wind(sensor):
 
 
 
+
 # light sensor init
 adc = machine.ADC()             # create an ADC object for the light sensor
 #apin_lightsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13, 3.3V reference, 12bit
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     payload = []            # common data buffer to collect and send
     chrono = Timer.Chrono()
     chrono.start()
-    led.value(1)
+    # led.value(1)
 
     # Sensors
     apin_soundsensor = adc.channel(pin='P13', attn = machine.ADC.ATTN_11DB)   # create an analog pin on P13
@@ -154,13 +155,15 @@ if __name__ == "__main__":
         time.sleep(2)
 
         # Data
-        hum_temp = measure_dht(d)
-        hum = hum_temp[0]
-        temp = hum_temp[1]
-        light = measure_light(apin_lightsensor)
-        windspeed = measure_wind(None)
-        sound = measure_sound(apin_soundsensor)
-
+        try:
+            hum_temp = measure_dht(d)
+            hum = hum_temp[0]
+            temp = hum_temp[1]
+            light = measure_light(apin_lightsensor)
+            windspeed = measure_wind(None)
+            sound = measure_sound(apin_soundsensor)
+        except:
+            print("Grande Problemas!")
        
         # encode
         temp = int(temp * 10 ) + 400           # max -40°, use it as offset
@@ -191,7 +194,7 @@ if __name__ == "__main__":
 
 
     print("[Going into a coma]")
-    led.value(0)
+    # led.value(0)
     machine.deepsleep(DOWN_TIME*1000)
     
   
