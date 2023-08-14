@@ -18,6 +18,11 @@ def mean(thelist: list) -> int:
         sum += n
     return(int(sum/len(thelist)))
 
+def sum(apin_soundsensor):
+    sum = 0
+    for n in thelist:
+        sum += n
+    
 
 def running_average(apin_soundsensor) -> int:
 # calculates a running average in a queue
@@ -29,8 +34,8 @@ def running_average(apin_soundsensor) -> int:
     queue.pop(0)                    # remove the oldest value
     queue.append(apin_soundsensor()) # add the newest value to the queue
     print(queue)
-    return mean(queue)
-
+    #return mean(queue)
+    return sum(queue)/10
 
 
 if __name__ == "__main__":
